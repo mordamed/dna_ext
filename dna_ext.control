@@ -1,0 +1,7 @@
+# DNA extension control file
+comment = 'DNA sequence data types and functions for PostgreSQL'
+default_version = '1.0'
+module_pathname = '$libdir/dna_ext'
+relocatable = true
+trusted = false
+requires = ''
