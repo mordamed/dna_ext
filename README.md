@@ -120,3 +120,26 @@ The extension supports all IUPAC nucleotide codes:
 ## License
 
 This extension is provided as-is for educational and research purposes.
+
+
+## lancer demo
+
+docker ps
+docker run --name dna_demo_db -p 5432:5432 -d dna_ext_demo #lancer le conteneur s'il est dans la liste
+docker exec -it dna_demo_db psql -U postgres -d dna_demo #se connecter 
+
+
+src/
+├── module.c          → Point d'entrée de l'extension
+├── type_dna.c        → Type DNA (séquences ADN)
+├── type_kmer.c       → Type K-mer (sous-séquences)
+├── type_qkmer.c      → Type Q-Kmer (k-mers avec qualité)
+├── dna_utils.c       → Fonctions utilitaires pour ADN
+├── funcs.c           → Fonctions d'analyse avancées
+├── ops.c             → Opérateurs de comparaison
+├── btree_ops.c       → Support d'index B-tree
+├── hash_ops.c        → Support d'index Hash
+└── spgist_kmer.c     → Support d'index SP-GiST (trie)
+| --- HEADERS ---
+├── dna.h             → Fichier d'en-tête (définitions communes)
+├── iupac.h           → Codes IUPAC pour nucléotides
