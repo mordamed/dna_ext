@@ -47,9 +47,14 @@ dna_ext/
 ### Core Functions
 - `dna_length()` - Get sequence length
 - `dna_complement()` - Generate complement sequence
+- `dna_reverse()` - Reverse a DNA sequence
 - `dna_reverse_complement()` - Generate reverse complement
 - `generate_kmers()` - Extract all k-mers from a sequence
 - `dna_gc_content()` - Calculate GC content percentage
+- `dna_count()` - Count specific nucleotides (alias for dna_count_nucleotide)
+- `dna_count_approx()` - Approximate count of nucleotides
+- `dna_to_string()` - Convert DNA type to text
+- `string_to_dna()` - Convert text to DNA type
 
 ### Analysis Functions
 - `dna_count_nucleotide()` - Count specific nucleotides
@@ -73,7 +78,9 @@ dna_ext/
 ### Indexing Support
 - **B-tree**: Standard ordering and range queries
 - **Hash**: Equality comparisons and hash joins
-- **SP-GiST**: Trie-based indexing for efficient k-mer searches
+- **SP-GiST**: Trie-based indexing for efficient k-mer searches *(Currently disabled - requires PostgreSQL 15 API updates)*
+
+**Note:** The SP-GiST indexing implementation is currently disabled due to API incompatibilities with PostgreSQL 15. The code exists in `src/spgist_kmer.c` but needs to be updated to use the new API structure. B-tree and Hash indexing are fully functional and recommended for production use.
 
 ## Building
 
@@ -124,13 +131,39 @@ This extension is provided as-is for educational and research purposes.
 
 ## lancer demo
 
-docker ps
-docker run --name dna_demo_db -p 5432:5432 -d dna_ext_demo #lancer le conteneur s'il est dans la liste
-docker exec -it dna_demo_db psql -U postgres -d dna_demo #se connecter 
+```bash
+# Construire l'image Docker
+docker build -t dna_ext_demo .
 
+# Lancer le conteneur
+docker run --name dna_demo_db -p 5432:5432 -d dna_ext_demo
 
+# Se connecter au PostgreSQL
+docker exec -it dna_demo_db psql -U postgres -d dna_demo
+
+# Exécuter le script de démonstration
+docker exec -i dna_demo_db psql -U postgres -d dna_demo < demo.sql
+
+# Arrêter et supprimer le conteneur
+docker stop dna_demo_db
+docker rm dna_demo_db
+```
+
+**Note de sécurité:** Le Dockerfile utilise un mot de passe par défaut (`password`). Pour un usage en production, utilisez des variables d'environnement sécurisées:
+```bash
+docker run --name dna_db -p 5432:5432 -e POSTGRES_PASSWORD=votre_mot_de_passe_securise -d dna_ext_demo
+```
+
+**Note de sécurité:** Le Dockerfile utilise un mot de passe par défaut (`password`). Pour un usage en production, utilisez des variables d'environnement sécurisées:
+```bash
+docker run --name dna_db -p 5432:5432 -e POSTGRES_PASSWORD=votre_mot_de_passe_securise -d dna_ext_demo
+```
+
+## Architecture du code
+
+```
 src/
-├── module.c          → Point d'entrée de l'extension
+├── module.c          → Point d'entrée de l'extension (PG_MODULE_MAGIC)
 ├── type_dna.c        → Type DNA (séquences ADN)
 ├── type_kmer.c       → Type K-mer (sous-séquences)
 ├── type_qkmer.c      → Type Q-Kmer (k-mers avec qualité)
@@ -139,7 +172,8 @@ src/
 ├── ops.c             → Opérateurs de comparaison
 ├── btree_ops.c       → Support d'index B-tree
 ├── hash_ops.c        → Support d'index Hash
-└── spgist_kmer.c     → Support d'index SP-GiST (trie)
-| --- HEADERS ---
+└── spgist_kmer.c     → Support d'index SP-GiST (actuellement désactivé)
+    --- HEADERS ---
 ├── dna.h             → Fichier d'en-tête (définitions communes)
-├── iupac.h           → Codes IUPAC pour nucléotides
+└── iupac.h           → Codes IUPAC pour nucléotides
+```

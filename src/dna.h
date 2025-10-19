@@ -70,7 +70,12 @@ Datum qkmer_send(PG_FUNCTION_ARGS);
 Datum dna_length(PG_FUNCTION_ARGS);
 Datum generate_kmers(PG_FUNCTION_ARGS);
 Datum dna_complement(PG_FUNCTION_ARGS);
+Datum dna_reverse(PG_FUNCTION_ARGS);
 Datum dna_reverse_complement(PG_FUNCTION_ARGS);
+Datum dna_count(PG_FUNCTION_ARGS);
+Datum dna_count_approx(PG_FUNCTION_ARGS);
+Datum dna_to_string(PG_FUNCTION_ARGS);
+Datum string_to_dna(PG_FUNCTION_ARGS);
 
 /* Operators */
 Datum dna_eq(PG_FUNCTION_ARGS);

@@ -2,6 +2,7 @@
 #include "iupac.h"
 #include <string.h>
 #include <ctype.h>
+#include "catalog/namespace.h"
 
 /*
  * DNA utility functions
@@ -155,11 +156,15 @@ generate_kmers(PG_FUNCTION_ARGS)
     Datum *elems;
     int num_kmers;
     int i;
+    Oid kmer_type_oid;
     
     if (k <= 0 || k > seq_len)
         ereport(ERROR,
                 (errcode(ERRCODE_INVALID_PARAMETER_VALUE),
                  errmsg("k must be between 1 and sequence length")));
+    
+    /* Get the OID of the kmer type */
+    kmer_type_oid = TypenameGetTypid("kmer");
     
     num_kmers = seq_len - k + 1;
     elems = (Datum *) palloc(num_kmers * sizeof(Datum));
@@ -174,8 +179,7 @@ generate_kmers(PG_FUNCTION_ARGS)
         elems[i] = PointerGetDatum(km);
     }
     
-    result = construct_array(elems, num_kmers, 
-                           get_fn_expr_rettype(fcinfo->flinfo),
+    result = construct_array(elems, num_kmers, kmer_type_oid,
                            -1, false, 'i');
     
     pfree(seq);
@@ -274,7 +278,8 @@ Datum
 dna_count(PG_FUNCTION_ARGS)
 {
     dna *d = PG_GETARG_DNA_P(0);
-    char nucl = (char) PG_GETARG_INT32(1);
+    text *nucl_text = PG_GETARG_TEXT_PP(1);
+    char nucl = *VARDATA_ANY(nucl_text);
     int len = dna_get_length(d);
     char *seq = dna_get_str(d);
     int count = 0;

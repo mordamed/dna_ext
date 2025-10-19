@@ -111,6 +111,11 @@ CREATE FUNCTION dna_complement(dna)
     AS 'MODULE_PATHNAME'
     LANGUAGE C IMMUTABLE STRICT;
 
+CREATE FUNCTION dna_reverse(dna)
+    RETURNS dna
+    AS 'MODULE_PATHNAME'
+    LANGUAGE C IMMUTABLE STRICT;
+
 CREATE FUNCTION dna_reverse_complement(dna)
     RETURNS dna
     AS 'MODULE_PATHNAME'
@@ -148,6 +153,26 @@ CREATE FUNCTION dna_translate(dna, integer)
 
 CREATE FUNCTION dna_sliding_gc(dna, integer)
     RETURNS double precision[]
+    AS 'MODULE_PATHNAME'
+    LANGUAGE C IMMUTABLE STRICT;
+
+CREATE FUNCTION dna_count(dna, text)
+    RETURNS integer
+    AS 'MODULE_PATHNAME'
+    LANGUAGE C IMMUTABLE STRICT;
+
+CREATE FUNCTION dna_count_approx(dna)
+    RETURNS integer
+    AS 'MODULE_PATHNAME'
+    LANGUAGE C IMMUTABLE STRICT;
+
+CREATE FUNCTION dna_to_string(dna)
+    RETURNS text
+    AS 'MODULE_PATHNAME'
+    LANGUAGE C IMMUTABLE STRICT;
+
+CREATE FUNCTION string_to_dna(text)
+    RETURNS dna
     AS 'MODULE_PATHNAME'
     LANGUAGE C IMMUTABLE STRICT;
 
